@@ -1,0 +1,101 @@
+# Constants for weight limits
+MIN_SAND_GRAVEL_WEIGHT = 49.9
+MAX_SAND_GRAVEL_WEIGHT = 50.1
+MIN_CEMENT_WEIGHT = 24.9
+MAX_CEMENT_WEIGHT = 25.1
+
+# Prices for sacks
+SACK_PRICES = {'C': 3, 'G': 2, 'S': 2}
+SPECIAL_PACK_PRICE = 10
+SPECIAL_PACK_CONTENTS = {'C': 1, 'G': 2, 'S': 2}
+
+def check_sack(contents, weight):
+    """
+    Check the contents and weight of a single sack.
+    """
+    if contents not in ['C', 'G', 'S']:
+        return "Invalid contents. Must be C, G, or S."
+
+    if contents == 'C' and (weight < MIN_CEMENT_WEIGHT or weight > MAX_CEMENT_WEIGHT):
+        return "Invalid weight for cement sack."
+
+    if contents in ['G', 'S'] and (weight < MIN_SAND_GRAVEL_WEIGHT or weight > MAX_SAND_GRAVEL_WEIGHT):
+        return "Invalid weight for sand or gravel sack."
+
+    return f"Accepted: Sack with contents {contents} and weight {weight} kg."
+
+def check_order():
+    """
+    Check a customer's order for delivery.
+    """
+    total_weight = 0
+    sacks_rejected = 0
+
+    # Prompt user for input
+    num_cement = int(input("Enter the number of cement sacks: "))
+    num_gravel = int(input("Enter the number of gravel sacks: "))
+    num_sand = int(input("Enter the number of sand sacks: "))
+
+    # Check each sack in the order
+    for _ in range(num_cement):
+        contents = 'C'
+        weight = float(input(f"Enter weight for cement sack {_ + 1} in kilograms: "))
+        result = check_sack(contents, weight)
+        if "Accepted" in result:
+            total_weight += weight
+        else:
+            sacks_rejected += 1
+        print(result)
+
+    for _ in range(num_gravel):
+        contents = 'G'
+        weight = float(input(f"Enter weight for gravel sack {_ + 1} in kilograms: "))
+        result = check_sack(contents, weight)
+        if "Accepted" in result:
+            total_weight += weight
+        else:
+            sacks_rejected += 1
+        print(result)
+
+    for _ in range(num_sand):
+        contents = 'S'
+        weight = float(input(f"Enter weight for sand sack {_ + 1} in kilograms: "))
+        result = check_sack(contents, weight)
+        if "Accepted" in result:
+            total_weight += weight
+        else:
+            sacks_rejected += 1
+        print(result)
+
+    # Display the total weight and number of rejected sacks
+    print(f"\nTotal weight of the order: {total_weight} kg")
+    print(f"Number of sacks rejected from the order: {sacks_rejected}")
+
+    return num_cement, num_gravel, num_sand
+
+def calculate_price(num_cement, num_gravel, num_sand):
+    """
+    Calculate the price for a customer's order.
+    """
+    regular_price = sum(SACK_PRICES['C'] * num_cement, SACK_PRICES['G'] * num_gravel, SACK_PRICES['S'] * num_sand)
+
+    # Check for special packs in the order
+    num_special_packs = min(num_cement // SPECIAL_PACK_CONTENTS['C'],
+                            num_gravel // SPECIAL_PACK_CONTENTS['G'],
+                            num_sand // SPECIAL_PACK_CONTENTS['S'])
+
+    # Calculate the discounted price and amount saved
+    discounted_price = regular_price - (num_special_packs * SPECIAL_PACK_PRICE)
+    amount_saved = regular_price - discounted_price
+
+    # Display the results
+    print(f"\nRegular price for the order: ${regular_price}")
+    print(f"Number of special packs in the order: {num_special_packs}")
+    print(f"Discounted price for the order: ${discounted_price}")
+    print(f"Amount saved: ${amount_saved}")
+
+# Run the program
+if __name__ == "__main__":
+    num_cement, num_gravel, num_sand = check_order()
+    calculate_price(num_cement, num_gravel, num_sand)
+
